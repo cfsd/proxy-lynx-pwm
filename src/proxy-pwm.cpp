@@ -71,7 +71,7 @@ void Pwm::setUp()
 
   m_path = "/sys/class/pwm/pwmchip";
   std::vector<std::string> pinsVector = {"00","20","21","40","41"};
-  std::vector<std::string> periodNsStringVector = {"50000000","50000000","50000000","50000000","50000000"};
+  std::vector<std::string> periodNsStringVector = {"50000","50000","50000","50000","50000"};
   std::vector<std::string> dutyCycleNsStringVector = {"0","0","0","0","0"};
 
   if (pinsVector.size() == periodNsStringVector.size() 

@@ -34,8 +34,8 @@ int32_t main(int32_t argc, char **argv) {
     auto commandlineArguments = cluon::getCommandlineArguments(argc, argv);
     if ( (0 == commandlineArguments.count("port")) || (0 == commandlineArguments.count("cid")) ) {
         std::cerr << argv[0] << " testing unit and publishes it to a running OpenDaVINCI session using the OpenDLV Standard Message Set." << std::endl;
-        std::cerr << "Usage:   " << argv[0] << "--port=<udp port>--cid=<OpenDaVINCI session> [--id=<Identifier in case of multiple beaglebone units>] [--verbose]" << std::endl;
-        std::cerr << "Example: " << argv[0] << "--port=8881 --cid=111 --id=1 --verbose=1" << std::endl;
+        std::cerr << "Usage:   " << argv[0] << " --port=<udp port>--cid=<OpenDaVINCI session> [--id=<Identifier in case of multiple beaglebone units>] [--verbose]" << std::endl;
+        std::cerr << "Example: " << argv[0] << " --port=8882 --cid=111 --id=1 --verbose=1" << std::endl;
         retCode = 1;
     } else {
         const uint32_t ID{(commandlineArguments["id"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["id"])) : 0};
@@ -66,7 +66,7 @@ int32_t main(int32_t argc, char **argv) {
             std::cout << "Time: " << std::ctime(&epoch_time) << std::endl;
             // decoder = pwm
             int16_t senderStamp = (int16_t) decoder.decode(d);
-            int32_t pinState = (int32_t) round((decoder.decode(d)- ((float) senderStamp))*100000000);
+            int32_t pinState = (int32_t) round((decoder.decode(d)- ((float) senderStamp))*100000);
             // if (retVal.first) {
 
             opendlv::proxy::PulseWidthModulationRequest msg;
