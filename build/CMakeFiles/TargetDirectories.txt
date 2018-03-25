@@ -1,0 +1,10 @@
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/install/strip.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/install.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/list_install_components.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/pwm.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/pwm-core.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/install/local.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/test.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/pwm-runner.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/edit_cache.dir
+/home/lynx/bbb_files/code/proxy-lynx-pwm/build/CMakeFiles/rebuild_cache.dir

@@ -33,7 +33,7 @@ class Pwm {
     //Pwm &operator=(Pwm &&) = delete;
 
    public:
-    Pwm();
+    Pwm(bool verbose, uint32_t id);
     ~Pwm();
 
    public:
@@ -56,6 +56,8 @@ class Pwm {
     uint32_t GetPeriodNs(uint16_t const) const;
 
     bool m_debug;
+    uint32_t m_bbbId;
+    uint32_t m_senderStampOffsetPwm;
     bool m_initialised;
     std::string m_path;
     std::vector<uint16_t> m_pins;

@@ -43,14 +43,13 @@ int32_t main(int32_t argc, char **argv) {
         std::cout << "Micro-Service ID:" << ID << std::endl;
 
         // Interface to a running OpenDaVINCI session.
-        Pwm pwm;
+        Pwm pwm(VERBOSE, ID);
 
         cluon::data::Envelope data;
         cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"])),
             [&data, &pw = pwm](cluon::data::Envelope &&envelope){
                 pw.callOnReceive(envelope);
-                // IMPORTANT INTRODUCE A MUTEX
-                data = envelope;
+                // IMPORTANT INTRODUCE A MUTEX 
             }
         };
 
@@ -59,14 +58,15 @@ int32_t main(int32_t argc, char **argv) {
         const std::string PORT(commandlineArguments["port"]);
         
         cluon::UDPReceiver UdpSocket(ADDR, std::stoi(PORT),
-            [&od4Session = od4, &decoder=pwm, VERBOSE](std::string &&d, std::string &&/*from*/, std::chrono::system_clock::time_point &&tp) noexcept {
+            [&od4Session = od4, &decoder=pwm, VERBOSE, ID](std::string &&d, std::string &&/*from*/, std::chrono::system_clock::time_point &&tp) noexcept {
             
             cluon::data::TimeStamp sampleTime = cluon::time::convert(tp);
             std::time_t epoch_time = std::chrono::system_clock::to_time_t(tp);
-            std::cout << "Time: " << std::ctime(&epoch_time) << std::endl;
+            std::cout << "[PROXY-PWM-UDP] Time: " << std::ctime(&epoch_time) << std::endl;
             // decoder = pwm
             int16_t senderStamp = (int16_t) decoder.decode(d);
             int32_t pinState = (int32_t) round((decoder.decode(d)- ((float) senderStamp))*100000);
+            senderStamp += (int16_t) ID*1000 + 300;
             // if (retVal.first) {
 
             opendlv::proxy::PulseWidthModulationRequest msg;
@@ -89,13 +89,6 @@ int32_t main(int32_t argc, char **argv) {
         // uint32_t count = 0;
         while (od4.isRunning()) {
             std::this_thread::sleep_for(1s);
-            /*if (data.dataType() == static_cast<int32_t>(opendlv::proxy::SwitchStateRequest::ID())) {
-                opendlv::proxy::SwitchStateRequest pwmState = cluon::extractMessage<opendlv::proxy::SwitchStateRequest>(std::move(data));
-                uint16_t pin = data.senderStamp();
-                bool value = pwmState.state();
-                std::cout << "While loop: Most recent state data:" << value << " Pin:" << pin << std::endl;
-            }*/
-            // count++;
         }
     }
     return retCode;

@@ -28,15 +28,15 @@
 #include <chrono>
 
 float Pwm::decode(const std::string &data) noexcept {
-    std::cout << "Got data:" << data << std::endl;
+    std::cout << "[PROXY-PWM-UDP] Got data:" << data << std::endl;
     float temp = std::stof(data);
     return temp;
 }
 
-Pwm::Pwm()
-    //: TimeTriggeredConferenceClientModule(argc, argv, "proxy-miniature-pwm")
-    //, m_debug()
-    : m_debug(1)
+Pwm::Pwm(bool verbose, uint32_t id)
+    : m_debug(verbose)
+    , m_bbbId(id)
+    , m_senderStampOffsetPwm(id*1000+300)
     , m_initialised()
     , m_path()
     , m_pins()
@@ -57,11 +57,11 @@ void Pwm::callOnReceive(cluon::data::Envelope data){
     }
     if (data.dataType() == static_cast<int32_t>(opendlv::proxy::PulseWidthModulationRequest::ID())) {
         opendlv::proxy::PulseWidthModulationRequest pwmState = cluon::extractMessage<opendlv::proxy::PulseWidthModulationRequest>(std::move(data));
-        uint16_t pin = data.senderStamp();
+        uint16_t pin = data.senderStamp()-m_senderStampOffsetPwm;
         uint32_t dutyCycleNs = pwmState.dutyCycleNs();
         SetDutyCycleNs(pin, dutyCycleNs);
 
-        std::cout << "Pwm duty:" << dutyCycleNs << " Pin:" << pin << std::endl;
+        std::cout << "[PROXY-PWM-RECEIVE] Pwm duty:" << dutyCycleNs << " Pin:" << pin << std::endl;
     }
 
 }
