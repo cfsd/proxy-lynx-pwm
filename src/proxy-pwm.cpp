@@ -60,8 +60,9 @@ void Pwm::callOnReceive(cluon::data::Envelope data){
         uint16_t pin = data.senderStamp()-m_senderStampOffsetPwm;
         uint32_t dutyCycleNs = pwmState.dutyCycleNs();
         SetDutyCycleNs(pin, dutyCycleNs);
-
-        std::cout << "[PROXY-PWM-RECEIVE] Pwm duty:" << dutyCycleNs << " Pin:" << pin << std::endl;
+        if (m_debug) {
+          std::cout << "[PROXY-PWM-RECEIVE] Pwm duty:" << dutyCycleNs << " Pin:" << pin << std::endl;
+        }
     }
 
 }
