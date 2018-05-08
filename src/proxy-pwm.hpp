@@ -38,8 +38,10 @@ class Pwm {
 
    public:
     float decode(const std::string &data) noexcept;
-    void callOnReceive(cluon::data::Envelope data);
     void body(cluon::OD4Session &od4);
+    void SetDutyCycleNs(uint16_t const, uint32_t const);    
+    uint32_t getSenderStampOffsetPwm();
+    bool getInitialised();
 
    private:
     void setUp();
@@ -50,9 +52,8 @@ class Pwm {
     void Reset();
     void SetEnabled(uint16_t const, bool const);
     bool GetEnabled(uint16_t const) const;
-    void SetDutyCycleNs(uint16_t const, uint32_t const);
-    uint32_t GetDutyCycleNs(uint16_t const) const;
     void SetPeriodNs(uint16_t const, uint32_t const);
+    uint32_t GetDutyCycleNs(uint16_t const) const;
     uint32_t GetPeriodNs(uint16_t const) const;
 
     bool m_debug;

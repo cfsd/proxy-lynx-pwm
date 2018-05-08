@@ -51,22 +51,6 @@ Pwm::~Pwm()
   Pwm::tearDown();
 }
 
-void Pwm::callOnReceive(cluon::data::Envelope data){
-    if (!m_initialised) {
-        return;
-    }
-    if (data.dataType() == static_cast<int32_t>(opendlv::proxy::PulseWidthModulationRequest::ID())) {
-        opendlv::proxy::PulseWidthModulationRequest pwmState = cluon::extractMessage<opendlv::proxy::PulseWidthModulationRequest>(std::move(data));
-        uint16_t pin = data.senderStamp()-m_senderStampOffsetPwm;
-        uint32_t dutyCycleNs = pwmState.dutyCycleNs();
-        SetDutyCycleNs(pin, dutyCycleNs);
-        if (m_debug) {
-          std::cout << "[PROXY-PWM-RECEIVE] Pwm duty:" << dutyCycleNs << " Pin:" << pin << std::endl;
-        }
-    }
-
-}
-
 void Pwm::setUp()
 {
 
@@ -272,4 +256,11 @@ uint32_t Pwm::GetPeriodNs(uint16_t const a_pin) const
     file.close();
     return 0;
   }
+}
+
+uint32_t Pwm::getSenderStampOffsetPwm(){
+  return m_senderStampOffsetPwm;
+}
+bool Pwm::getInitialised(){
+  return m_initialised;
 }

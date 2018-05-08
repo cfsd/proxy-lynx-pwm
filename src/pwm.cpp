@@ -45,52 +45,58 @@ int32_t main(int32_t argc, char **argv) {
         // Interface to a running OpenDaVINCI session.
         Pwm pwm(VERBOSE, ID);
 
-        cluon::data::Envelope data;
-        cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"])),
-            [&data, &pw = pwm](cluon::data::Envelope &&envelope){
-                pw.callOnReceive(envelope);
-                // IMPORTANT INTRODUCE A MUTEX 
-            }
-        };
+        //cluon::data::Envelope data;
+        cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"]))};
+        
 
         // Interface to OxTS.
-        const std::string ADDR("0.0.0.0");
-        const std::string PORT(commandlineArguments["port"]);
-        
-        cluon::UDPReceiver UdpSocket(ADDR, std::stoi(PORT),
-            [&od4Session = od4, &decoder=pwm, VERBOSE, ID](std::string &&d, std::string &&/*from*/, std::chrono::system_clock::time_point &&tp) noexcept {
+        if (VERBOSE){
+            const std::string ADDR("0.0.0.0");
+            const std::string PORT(commandlineArguments["port"]);
             
-            cluon::data::TimeStamp sampleTime = cluon::time::convert(tp);
-            std::time_t epoch_time = std::chrono::system_clock::to_time_t(tp);
-            std::cout << "[PROXY-PWM-UDP] Time: " << std::ctime(&epoch_time) << std::endl;
-            // decoder = pwm
-            int16_t senderStamp = (int16_t) decoder.decode(d);
-            int32_t pinState = (int32_t) round((decoder.decode(d)- ((float) senderStamp))*100000);
-            senderStamp += (int16_t) ID*1000 + 300;
-            // if (retVal.first) {
+            cluon::UDPReceiver UdpSocket(ADDR, std::stoi(PORT),
+                [&od4Session = od4, &decoder=pwm, VERBOSE, ID](std::string &&d, std::string &&/*from*/, std::chrono::system_clock::time_point &&tp) noexcept {
+                
+                cluon::data::TimeStamp sampleTime = cluon::time::convert(tp);
+                std::time_t epoch_time = std::chrono::system_clock::to_time_t(tp);
+                std::cout << "[PROXY-PWM-UDP] Time: " << std::ctime(&epoch_time) << std::endl;
+                // decoder = pwm
+                int16_t senderStamp = (int16_t) decoder.decode(d);
+                int32_t pinState = (int32_t) round((decoder.decode(d)- ((float) senderStamp))*100000);
+                senderStamp += (int16_t) ID*1000 + 300;
+                // if (retVal.first) {
 
-            opendlv::proxy::PulseWidthModulationRequest msg;
-            msg.dutyCycleNs(pinState);
-            od4Session.send(msg, sampleTime, senderStamp);
+                opendlv::proxy::PulseWidthModulationRequest msg;
+                msg.dutyCycleNs(pinState);
+                od4Session.send(msg, sampleTime, senderStamp);
+            });
+        }
 
-            //     // Print values on console.
-            //     if (VERBOSE) {
-            //         std::stringstream buffer;
-            //         msg1.accept([](uint32_t, const std::string &, const std::string &) {},
-            //                    [&buffer](uint32_t, std::string &&, std::string &&n, auto v) { buffer << n << " = " << v << '\n'; },
-            //                    []() {});
-            //         std::cout << buffer.str() << std::endl;
-            //     }
-            // }
-        });
+        auto onPulseWidthModulationRequest{[&pwm, &VERBOSE](cluon::data::Envelope &&envelope)
+        {   
+            if (!pwm.getInitialised()){
+                return;
+            }
+            auto const pwmState = cluon::extractMessage<opendlv::proxy::PulseWidthModulationRequest>(std::move(envelope));
+            uint16_t pin = envelope.senderStamp()-pwm.getSenderStampOffsetPwm();
+            uint32_t dutyCycleNs = pwmState.dutyCycleNs();
+            pwm.SetDutyCycleNs(pin, dutyCycleNs);
+
+            if (VERBOSE){
+                std::cout << "[PROXY-PWM-RECEIVE] Pwm duty:" << dutyCycleNs << " Pin:" << pin << std::endl;
+            }
+        }};
+        od4.dataTrigger(opendlv::proxy::PulseWidthModulationRequest::ID(), onPulseWidthModulationRequest);
 
         // Just sleep as this microservice is data driven.
         using namespace std::literals::chrono_literals;
-        // uint32_t count = 0;
         while (od4.isRunning()) {
             std::this_thread::sleep_for(1s);
         }
     }
     return retCode;
 }
+
+        
+
 
