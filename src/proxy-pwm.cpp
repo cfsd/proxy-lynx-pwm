@@ -56,7 +56,7 @@ void Pwm::setUp()
 
   m_path = "/sys/class/pwm/pwmchip";
   std::vector<std::string> pinsVector = {"00","20","21","40","41"};
-  std::vector<std::string> periodNsStringVector = {"50000000","50000000","50000000","250000","250000"};
+  std::vector<std::string> periodNsStringVector = {"50000000","50000000","50000000","50000","50000"};
   std::vector<std::string> dutyCycleNsStringVector = {"0","0","0","0","0"};
 
   if (pinsVector.size() == periodNsStringVector.size() 
@@ -69,14 +69,13 @@ void Pwm::setUp()
       m_periodsNs.push_back(periodNs);
       m_dutyCyclesNs.push_back(dutyCycleNs);
     }
-    if (m_debug) {
-      std::cout << "[PROXY-PWM] " << "Initialised pins:";
-      for (uint32_t i = 0; i < pinsVector.size(); i++) {
-        std::cout << "|Pin " << m_pins.at(i) << " Period " << m_periodsNs.at(i) 
-            << " Duty cycle" << m_dutyCyclesNs.at(i);
-      }
-      std::cout << "." << std::endl;
+    std::cout << "[PROXY-PWM] " << "Initialised pins:";
+    for (uint32_t i = 0; i < pinsVector.size(); i++) {
+      std::cout << "|Pin " << m_pins.at(i) << " Period " << m_periodsNs.at(i) 
+          << " Duty cycle" << m_dutyCyclesNs.at(i);
     }
+    std::cout << "." << std::endl;
+  
   } else {
     std::cerr << "[PROXY-PWM] Number of pins do not equals to number of periods or duty cycles." 
         << std::endl;
