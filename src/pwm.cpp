@@ -82,7 +82,9 @@ int32_t main(int32_t argc, char **argv) {
             uint32_t dutyCycleNs = pwmState.dutyCycleNs();
             if (pin == 41 || pin == 40){
                 dutyCycleNs = dutyCycleNs*5;
-            }
+            }else{
+	   	dutyCycleNs = dutyCycleNs/20;
+	    }
             pwm.SetDutyCycleNs(pin, dutyCycleNs);
 
             if (VERBOSE){
