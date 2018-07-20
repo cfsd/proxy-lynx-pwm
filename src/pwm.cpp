@@ -35,7 +35,7 @@ int32_t main(int32_t argc, char **argv) {
     if ( (0 == commandlineArguments.count("port")) || (0 == commandlineArguments.count("cid")) ) {
         std::cerr << argv[0] << " testing unit and publishes it to a running OpenDaVINCI session using the OpenDLV Standard Message Set." << std::endl;
         std::cerr << "Usage:   " << argv[0] << " --port=<udp port>--cid=<OpenDaVINCI session> [--id=<Identifier in case of multiple beaglebone units>] [--verbose]" << std::endl;
-        std::cerr << "Example: " << argv[0] << " --port=8882 --cid=111 --id=1 --verbose=1" << std::endl;
+        std::cerr << "Example: " << argv[0] << " --port=8882 --cid=222 --id=1 --verbose=1" << std::endl;
         retCode = 1;
     } else {
         const uint32_t ID{(commandlineArguments["id"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["id"])) : 0};
@@ -80,6 +80,9 @@ int32_t main(int32_t argc, char **argv) {
             auto const pwmState = cluon::extractMessage<opendlv::proxy::PulseWidthModulationRequest>(std::move(envelope));
             uint16_t pin = envelope.senderStamp()-pwm.getSenderStampOffsetPwm();
             uint32_t dutyCycleNs = pwmState.dutyCycleNs();
+            if (pin == 41 || pin == 40){
+                dutyCycleNs = dutyCycleNs*5;
+            }
             pwm.SetDutyCycleNs(pin, dutyCycleNs);
 
             if (VERBOSE){
