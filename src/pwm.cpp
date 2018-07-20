@@ -81,7 +81,7 @@ int32_t main(int32_t argc, char **argv) {
             uint16_t pin = envelope.senderStamp()-pwm.getSenderStampOffsetPwm();
             uint32_t dutyCycleNs = pwmState.dutyCycleNs();
             if (pin == 41 || pin == 40){
-                dutyCycleNs = dutyCycleNs;
+                //dutyCycleNs = dutyCycleNs;
             }else{
 	   	        dutyCycleNs = dutyCycleNs/20;
 	        }
