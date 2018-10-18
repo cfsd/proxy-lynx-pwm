@@ -1,3 +1,30 @@
+# PWM 
+Set, get. enable the PWM duty_cycle and period in nanoseconds to the devices: light on the hoop, the breaking accuractor.
+
+session id : cidpwm=222 
+
+sender id => a_Pin => pin= a_pin%10;
+
+|   pwm  |senderstamp|a_pin|
+|--------|-----|---|
+|AssiBlue|1300|00|
+|AssiRed |1320|20|
+|AssiGreen|1321|21|
+|logic break|1341|41|
+|Ps3 controller|1341|41|
+|m_pwmPinSteer|1340| 40|
+
+it calculate the sender and Pin by:
+
+```cpp
+id=1//defalut
+senderStampOffsetPwm = id*1000+300
+pin = envelope.senderStamp()-pwm.getSenderStampOffsetPwm();
+```
+
+[Not sure why]:
+If pin isn't 41 or 42 then: dutyCycleNs = dutyCycleNs/20;
+
 ## OpenDLV Microservice for Beaglebone
 
 This repository provides source code for beaglebones for the OpenDLV.io software ecosystem.
